@@ -1,5 +1,7 @@
 {
   "functions": {
-    "api/neverdies.py": {}
+    "api/neverdies.py": {
+      "runtime": "python3.9"
+    }
   }
 }
