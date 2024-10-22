@@ -1,7 +1,7 @@
 {
   "functions": {
     "neverdies.py": {
-      "runtime": "python3.10"
+      "runtime": "vercel-python@0.3.0"
     }
   }
 }
