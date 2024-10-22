@@ -6,11 +6,11 @@ from datetime import datetime
 import cv2  # For camera access
 
 def handler(request):
+    # Mesaj döndür
     return {
         "statusCode": 200,
         "body": "Hello from Vercel!"
     }
-
 
 # Get IP details
 def get_ip_details():
