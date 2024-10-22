@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/neverdies.py": {
-      "runtime": "vercel-python@0.3.0"  // veya mevcut olan en güncel sürümü
+      "runtime": "vercel-python@0.3.0"  
     }
   }
 }
