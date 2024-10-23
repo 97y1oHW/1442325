@@ -5,12 +5,7 @@ import socket
 from datetime import datetime
 import os  # For environment variables
 
-def handler(request):
-    # Mesaj döndür
-    return {
-        "statusCode": 200,
-        "body": "Hello from Vercel!"
-    }
+
 
 # Get IP details
 def get_ip_details():
@@ -68,6 +63,12 @@ def get_user_agent():
 def check_mobile(user_agent):
     mobile_devices = ['iPhone', 'Android', 'iPad', 'Mobile']
     return "Yes" if any(device in user_agent for device in mobile_devices) else "No"
+
+def handler(request):
+    return {
+        "statusCode": 200,
+        "body": "Python dosyası başarıyla çalıştırıldı!"
+    }
 
 # Get device name
 def get_device_name():
