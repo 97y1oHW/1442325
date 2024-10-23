@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/neverdies.py": {
+    "api/**/*.py": {
       "runtime": "vercel-python@0.5.1"
     }
   }
